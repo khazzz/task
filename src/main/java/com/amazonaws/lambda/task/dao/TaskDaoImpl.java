@@ -2,10 +2,8 @@ package com.amazonaws.lambda.task.dao;
 
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -15,6 +13,8 @@ import com.amazonaws.lambda.task.util.TaskComparator;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
+import com.amazonaws.services.dynamodbv2.model.Condition;
 
 
 public class TaskDaoImpl implements TaskDao {
@@ -52,17 +52,29 @@ public class TaskDaoImpl implements TaskDao {
         
         return tasks;
     }
+    
+    @Override
+    public List<Task> findAllUncompletedTasks() {
+    
+    		// completed tasks are stored with a value of 0, so everything that is > 0 is uncompleted
+        DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
+        scanExpression.addFilterCondition("completedDate", 
+                new Condition()
+                   .withComparisonOperator(ComparisonOperator.GT)
+                   .withAttributeValueList(new AttributeValue().withN("0")));
+        
+        return mapper.scan(Task.class, scanExpression);
+    }
 
     @Override
     public List<Task> findTasksByUser(String user) {
 
-    		Map<String, AttributeValue> eav = new HashMap<>();
-        eav.put(":v1", new AttributeValue().withS(user));
+    		DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
+        scanExpression.addFilterCondition("user", 
+                new Condition()
+                   .withComparisonOperator(ComparisonOperator.EQ)
+                   .withAttributeValueList(new AttributeValue().withS(user)));
         
-        DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
-                                                .withFilterExpression("user = :val1")
-                                                .withExpressionAttributeValues(eav);
-
         return mapper.scan(Task.class, scanExpression);
     }
 
@@ -77,10 +89,13 @@ public class TaskDaoImpl implements TaskDao {
 
     		List<Task> tasks = findTasksByUser(task.getUser());
 		
-		// update a matching task
+		// update a matching uncompleted task
 		if(tasks!=null && !tasks.isEmpty()) {
 	    		for(Task currentTask: tasks) {
-	    			if(currentTask.equalsWithoutCompletedDate(task)) {
+	    			if(currentTask.equalsWithoutCompletedDate(task) 
+	    					&& currentTask.getCompletedDate().longValue() > 0
+	    					&& task.getCompletedDate().longValue() == 0) {
+	    				
 	    				currentTask.setCompletedDate(task.getCompletedDate());
 	    				mapper.save(currentTask);
 	    				return;

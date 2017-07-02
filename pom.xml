@@ -83,6 +83,12 @@
         <artifactId>aws-java-sdk-dynamodb</artifactId>
         <version>1.11.6</version>
     </dependency>
+    <!-- email support -->
+    <dependency>
+	    <groupId>javax.mail</groupId>
+	    <artifactId>mail</artifactId>
+	    <version>1.4</version>
+	</dependency>
     <!-- comparator support -->
     <dependency>
 	    <groupId>commons-lang</groupId>

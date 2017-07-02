@@ -18,8 +18,8 @@ public class UpdateTaskFunctionTest {
 
     @BeforeClass
     public static void createInput() throws IOException {
-        input = new TaskDto("2017-06-30T10:49:46-04:00", "pk@test.com", "test task 2", 1L);
-    }
+    		input = new TaskDto("", "testy.mctester@example.com", "Do something awesome", 1L);    
+    	}
     
     private Context createContext() {
         TestContext ctx = new TestContext();

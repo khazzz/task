@@ -9,6 +9,8 @@ import com.amazonaws.lambda.task.domain.Task;
 public interface TaskDao {
 
     List<Task> findAllTasks();
+    
+    List<Task> findAllUncompletedTasks();
 
     List<Task> findTasksByUser(String user);
 
