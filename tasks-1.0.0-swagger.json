@@ -1,0 +1,199 @@
+{
+	"swagger": "2.0",
+	"info": {
+		"description": "This is a tasks API",
+		"version": "1.0.0",
+		"title": "Tasks API",
+		"contact": {
+			"email": "mkhazanov.developer@gmail.com.com"
+		},
+		"license": {
+			"name": "Apache 2.0",
+			"url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+		}
+	},
+	"tags": [
+		{
+			"name": "admins",
+			"description": "Secured Admin-only calls"
+		},
+		{
+			"name": "developers",
+			"description": "Operations available to regular developers"
+		}
+	],
+	"paths": {
+		"/tasks": {
+			"get": {
+				"tags": [
+					"developers"
+				],
+				"summary": "list all tasks",
+				"operationId": "listTasks",
+				"description": "List all tasks\n",
+				"produces": [
+					"application/json"
+				],
+				"responses": {
+					"200": {
+						"description": "task list",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/TaskDto"
+							}
+						}
+					},
+					"400": {
+						"description": "bad input parameter"
+					}
+				}
+			},
+			"post": {
+				"tags": [
+					"admins"
+				],
+				"summary": "adds a task",
+				"operationId": "addTask",
+				"description": "Adds a task to the list",
+				"consumes": [
+					"application/json"
+				],
+				"produces": [
+					"application/json"
+				],
+				"parameters": [
+					{
+						"in": "body",
+						"name": "TaskDto",
+						"description": "Task to add",
+						"schema": {
+							"$ref": "#/definitions/TaskDto"
+						}
+					}
+				],
+				"responses": {
+					"201": {
+						"description": "item created"
+					},
+					"400": {
+						"description": "invalid input, object invalid"
+					}
+				}
+			},
+			"put": {
+				"tags": [
+					"admins"
+				],
+				"summary": "updates a task",
+				"operationId": "updateTask",
+				"description": "Updates an existing task",
+				"consumes": [
+					"application/json"
+				],
+				"produces": [
+					"application/json"
+				],
+				"parameters": [
+					{
+						"in": "body",
+						"name": "TaskDto",
+						"description": "Task to update",
+						"schema": {
+							"$ref": "#/definitions/TaskDto"
+						}
+					}
+				],
+				"responses": {
+					"201": {
+						"description": "item updated"
+					},
+					"400": {
+						"description": "invalid input, object invalid"
+					}
+				}
+			},
+			"delete": {
+				"tags": [
+					"admins"
+				],
+				"summary": "delete a task",
+				"operationId": "deleteTask",
+				"description": "Deletes an existing task",
+				"consumes": [
+					"application/json"
+				],
+				"produces": [
+					"application/json"
+				],
+				"parameters": [
+					{
+						"in": "body",
+						"name": "TaskDto",
+						"description": "Task to delete",
+						"schema": {
+							"$ref": "#/definitions/TaskDto"
+						}
+					}
+				],
+				"responses": {
+					"201": {
+						"description": "item deleted"
+					},
+					"400": {
+						"description": "invalid input, object invalid"
+					}
+				}
+			}
+		},
+		"/tasks/daily": {
+			"get": {
+				"tags": [
+					"developers"
+				],
+				"summary": "email uncompleted tasks to corresponding task users",
+				"operationId": "uncompletedTasks",
+				"description": "email uncompleted tasks to corresponding task users\n",
+				"responses": {
+					"201": {
+						"description": "processed"
+					}
+				}
+			}
+		}
+	},
+	"definitions": {
+		"TaskDto": {
+			"type": "object",
+			"required": [
+				"description",
+				"priority"
+			],
+			"properties": {
+				"user": {
+					"type": "string",
+					"format": "email",
+					"example": "testy.mctester@example.com"
+				},
+				"description": {
+					"type": "string",
+					"example": "Do something awesome"
+				},
+				"priority": {
+					"type": "integer",
+					"example": 0
+				},
+				"completed": {
+					"type": "string",
+					"format": "int32",
+					"example": "2016-07-06T12:22:46-04Z"
+				}
+			}
+		}
+	},
+	"host": "virtserver.swaggerhub.com",
+	"basePath": "/mkhazanov/Tasks3/1.0.0",
+	"schemes": [
+		"https"
+	]
+}
